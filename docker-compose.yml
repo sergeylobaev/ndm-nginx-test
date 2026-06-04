@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  app:
+    image: mendhak/http-https-echo:31
+    container_name: app
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+  nginx1:
+    image: nginx:alpine
+    container_name: nginx1
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx1.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - nginx2
+      - nginx3
+
+  nginx2:
+    image: nginx:alpine
+    container_name: nginx2
+    ports:
+      - "8082:80"
+    volumes:
+      - ./nginx2.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - nginx3
+
+  nginx3:
+    image: nginx:alpine
+    container_name: nginx3
+    ports:
+      - "8083:80"
+    volumes:
+      - ./nginx3.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - app
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
